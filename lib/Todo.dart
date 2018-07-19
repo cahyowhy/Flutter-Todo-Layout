@@ -9,6 +9,8 @@ class TodoScreen extends StatefulWidget {
 class _TodoState extends State<TodoScreen> {
   List<Todo> _todos = new List();
   final textEditingController = TextEditingController();
+  final textEditingFocusNode = FocusNode();
+  final listviewScrollController = ScrollController();
 
   @override
   void initState() {
@@ -21,6 +23,7 @@ class _TodoState extends State<TodoScreen> {
   @override
   void dispose() {
     textEditingController.dispose();
+    textEditingFocusNode.dispose();
     super.dispose();
   }
 
@@ -42,7 +45,9 @@ class _TodoState extends State<TodoScreen> {
       subtitle: Text(todo.description),
       leading: Icon(Icons.book, color: Colors.redAccent),
       trailing: IconButton(
-          icon: Icon(Icons.check_circle), onPressed: () => _removeTodos(index)),
+          splashColor: Colors.redAccent,
+          icon: Icon(Icons.check_circle),
+          onPressed: () => _removeTodos(index)),
     );
   }
 
@@ -55,14 +60,14 @@ class _TodoState extends State<TodoScreen> {
             Expanded(
                 flex: 1,
                 child: Container(
-                  padding: EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
-                  child: ListView.builder(
-                    itemBuilder: (BuildContext context, int index) {
-                      return generateListItem(_todos[index], index);
-                    },
-                    itemCount: _todos.length,
-                  ),
-                )),
+                    padding:
+                        EdgeInsets.only(right: 16.0, left: 16.0, top: 16.0),
+                    child: ListView(
+                      controller: listviewScrollController,
+                      children: List.generate(_todos.length, (index) {
+                        return generateListItem(_todos[index], index);
+                      }),
+                    ))),
             Expanded(
                 flex: 0,
                 child: Material(
@@ -76,6 +81,7 @@ class _TodoState extends State<TodoScreen> {
                             flex: 1,
                             child: TextFormField(
                               controller: textEditingController,
+                              focusNode: textEditingFocusNode,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                   hintText: 'Fill with your email address',
@@ -91,6 +97,12 @@ class _TodoState extends State<TodoScreen> {
                                   onPressed: () {
                                     _addTodos(text: textEditingController.text);
                                     textEditingController.clear();
+                                    textEditingFocusNode.unfocus();
+                                    listviewScrollController.animateTo(
+                                        listviewScrollController
+                                            .position.maxScrollExtent,
+                                        curve: Curves.easeOut,
+                                        duration: Duration(milliseconds: 1000));
                                   }))
                         ]))))
           ]),
