@@ -40,14 +40,37 @@ class _TodoState extends State<TodoScreen> {
   }
 
   Widget generateListItem(Todo todo, index) {
-    return ListTile(
-      title: Text(todo.title),
-      subtitle: Text(todo.description),
-      leading: Icon(Icons.book, color: Colors.redAccent),
-      trailing: IconButton(
-          splashColor: Colors.redAccent,
-          icon: Icon(Icons.check_circle),
-          onPressed: () => _removeTodos(index)),
+    return Builder(
+      builder: (BuildContext context) {
+        
+        return Dismissible(
+          key: Key("list-tile-${index}"),
+          onDismissed: (DismissDirection dismissDirection) {
+            _removeTodos(index);
+
+            Scaffold.of(context).showSnackBar(
+                SnackBar(content: Text("Menghapus daftar ${todo.title}")));
+          },
+          direction: DismissDirection.endToStart,
+          background: Container(
+              color: Colors.redAccent,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(child: SizedBox(), flex: 1),
+                  Container(
+                      child: Icon(Icons.delete_sweep, color: Colors.white),
+                      padding: EdgeInsets.symmetric(horizontal: 16.0))
+                ],
+              )),
+          child: ListTile(
+            title: Text(todo.title),
+            subtitle: Text(todo.description),
+            leading: Icon(Icons.book, color: Colors.purpleAccent),
+            trailing: Icon(Icons.delete_forever, color: Colors.redAccent),
+          ),
+        );
+      },
     );
   }
 

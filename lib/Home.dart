@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './FavoriteWidget.dart';
 
 class HomeScreen extends StatelessWidget {
 
@@ -119,11 +120,9 @@ Activities enjoyed here include rowing, and riding the summer toboggan run.
                 ],
               )
           ),
-          Icon(
-            Icons.star,
-            color: Colors.red[500],
-          ),
-          Text('41')
+          FavoriteWidget(
+            favCount: 55,
+          )
         ],
       ),
     );
